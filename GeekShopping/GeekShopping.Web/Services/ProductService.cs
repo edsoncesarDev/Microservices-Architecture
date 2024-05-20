@@ -20,7 +20,7 @@ public sealed class ProductService : IProductService
 
         ValidateHttpStatus(response);
 
-        return await response.ReadContentAs<List<ProductModel>>(response);
+        return await response.ReadContentAs<List<ProductModel>>();
     }
 
     public async Task<ProductModel> GetProductById(int id)
@@ -29,7 +29,7 @@ public sealed class ProductService : IProductService
 
         ValidateHttpStatus(response);
 
-        return await response.ReadContentAs<ProductModel>(response);
+        return await response.ReadContentAs<ProductModel>();
     }
 
     public async Task<ProductModel> AddProduct(ProductModel product)
@@ -38,7 +38,7 @@ public sealed class ProductService : IProductService
 
         ValidateHttpStatus(response);
 
-        return await response.ReadContentAs<ProductModel>(response);
+        return await response.ReadContentAs<ProductModel>();
     }
 
     public async Task<ProductModel> UpdateProduct(ProductModel product)
@@ -47,7 +47,7 @@ public sealed class ProductService : IProductService
 
         ValidateHttpStatus(response);
 
-        return await response.ReadContentAs<ProductModel>(response);
+        return await response.ReadContentAs<ProductModel>();
     }
 
     public async Task<bool> DeleteProductById(int id)
