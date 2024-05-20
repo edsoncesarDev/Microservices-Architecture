@@ -35,7 +35,7 @@ public sealed class Product : Base
         BusinessException.When((imageURL != null) && (string.IsNullOrWhiteSpace(imageURL)), "Invalid imageURL");
         ImageURL = imageURL;
 
-        CreationDate = DateTime.UtcNow;
+        CreationDate = DateTime.SpecifyKind(Convert.ToDateTime(CreationDate), DateTimeKind.Utc);
     }
     
 }
