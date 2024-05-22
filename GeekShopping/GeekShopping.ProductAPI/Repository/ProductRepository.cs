@@ -44,7 +44,7 @@ public sealed class ProductRepository : IProductRespository
 
     public async Task<ProductDto> AddProduct(ProductDto productDto)
     {
-        var product = new Product(productDto.Name, productDto.Price, productDto.Description, productDto.Category, productDto.ImageURL);
+        var product = new Product(productDto.Name, productDto.Price, productDto.Description!, productDto.Category!, productDto.ImageURL!);
 
         await _context.Products.AddAsync(product);
 
@@ -63,7 +63,7 @@ public sealed class ProductRepository : IProductRespository
             return null!;
         }
 
-        product.ImplementProduct(productDto.Name, productDto.Price, productDto.Description, productDto.Category, productDto.ImageURL);
+        product.ImplementProduct(productDto.Name, productDto.Price, productDto.Description!, productDto.Category!, productDto.ImageURL!);
 
         _context.Products.Update(product);
 
