@@ -42,7 +42,7 @@ public class ProductsController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> AddProduct(ProductDto inputModel)
+    public async Task<IActionResult> AddProduct([FromBody] ProductDto inputModel)
     {
         var product = await _product.AddProduct(inputModel);
 
@@ -55,7 +55,7 @@ public class ProductsController : ControllerBase
     }
 
     [HttpPut]
-    public async Task<IActionResult> UpdateProduct(ProductDto inputModel)
+    public async Task<IActionResult> UpdateProduct([FromBody] ProductDto inputModel)
     {
         var product = await _product.UpdateProduct(inputModel);
         
