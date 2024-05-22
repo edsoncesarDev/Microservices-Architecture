@@ -21,14 +21,6 @@ public class ProductsController : Controller
         return View(products);
     }
 
-    [HttpGet("{id:int}")]
-    public async Task<IActionResult> GetProductById(int id)
-    {
-        var product = await _productService.GetProductById(id);
-
-        return await Update(product);
-    }
-
     public async Task<IActionResult> ViewCreate()
     {
         return View();
@@ -50,20 +42,56 @@ public class ProductsController : Controller
         return View(model);
     }
 
-    [HttpPut]
+    public async Task<IActionResult> ViewUpdate(int id)
+    {
+       var product = await _productService.GetProductById(id);
+
+        if(product != null)
+        {
+            return View(product);
+        }
+        
+        return NotFound();
+    }
+
+    [HttpPost]
     public async Task<IActionResult> Update(ProductModel model)
     {
-        await _productService.UpdateProduct(model);
+        if (ModelState.IsValid)
+        {
+            var response = await _productService.UpdateProduct(model);
+
+            if (response != null)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+        }
 
         return View(model);
     }
 
-    [HttpDelete("{id:int}")]
-    public async Task<IActionResult> Delete(int id)
+    public async Task<IActionResult> ViewDelete(int id)
     {
-        await _productService.DeleteProductById(id);
+        var product = await _productService.GetProductById(id);
 
-        return await Index();
+        if (product != null)
+        {
+            return View(product);
+        }
 
+        return NotFound();
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Delete(ProductModel model)
+    {
+        var response = await _productService.DeleteProductById(model.Id);
+
+        if (response)
+        {
+            return RedirectToAction(nameof(Index));
+        }
+
+        return View(model);
     }
 }
