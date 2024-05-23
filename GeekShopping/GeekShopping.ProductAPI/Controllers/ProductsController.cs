@@ -1,6 +1,8 @@
 using GeekShopping.ProductAPI.Dto;
 using GeekShopping.ProductAPI.Repository.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Shared.Roles;
 
 namespace GeekShopping.ProductAPI.Controllers;
 
@@ -15,6 +17,7 @@ public class ProductsController : ControllerBase
         _product = product;
     }
 
+    [Authorize]
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
@@ -28,6 +31,7 @@ public class ProductsController : ControllerBase
         return Ok(products);
     }
 
+    [Authorize]
     [HttpGet("{id:int}")]
     public async Task<IActionResult> GetProductById(int id)
     {
@@ -41,6 +45,7 @@ public class ProductsController : ControllerBase
         return Ok(product);
     }
 
+    [Authorize]
     [HttpPost]
     public async Task<IActionResult> AddProduct([FromBody] ProductDto inputModel)
     {
@@ -54,6 +59,7 @@ public class ProductsController : ControllerBase
         return Ok(product);
     }
 
+    [Authorize]
     [HttpPut]
     public async Task<IActionResult> UpdateProduct([FromBody] ProductDto inputModel)
     {
@@ -67,6 +73,7 @@ public class ProductsController : ControllerBase
         return Ok(product);
     }
 
+    [Authorize(Roles = AuthorizeRole.Admin)]
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> DeleteProduct(int id)
     {

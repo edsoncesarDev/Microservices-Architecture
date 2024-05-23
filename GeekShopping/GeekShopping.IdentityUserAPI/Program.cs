@@ -47,6 +47,18 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+const string CORS_POLICY = "CorsPolicy";
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: CORS_POLICY,
+        corsPolicyBuilder =>
+        {
+            corsPolicyBuilder.AllowAnyOrigin();
+            corsPolicyBuilder.AllowAnyMethod();
+            corsPolicyBuilder.AllowAnyHeader();
+        });
+});
+
 var app = builder.Build();
 
 app.UseExceptionHandler(c => c.Run(async context =>
@@ -68,6 +80,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors(CORS_POLICY);
 
 app.UseAuthentication();
 
