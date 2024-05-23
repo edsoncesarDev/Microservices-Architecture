@@ -44,9 +44,47 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(x =>
+
+builder.Services.AddSwaggerGen(c =>
 {
-    x.SwaggerDoc("v1", new OpenApiInfo { Title = "GeekShopping", Version = "v1" });
+    c.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "GeekShopping",
+        Version = "v1",
+        Contact = new OpenApiContact
+        {
+            Name = "Edson César",
+            Email = "edson.dev10@gmail.com",
+            Url = new Uri("https://br.linkedin.com/in/edson-cesar-1a5067a7")
+        }
+    });
+
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
+    {
+        Name = "Authorization",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "Bearer",
+        BearerFormat = "JWT",
+        Description = @"JWT Authorization header using the Bearer scheme.
+                                    Enter with 'Bearer' [space] and then place your token.
+                                    Example: 'Bearer 12345abcdef'",
+    });
+
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            new string[] { }
+        }
+    });
 });
 
 const string CORS_POLICY = "CorsPolicy";

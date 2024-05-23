@@ -69,6 +69,6 @@ public sealed class UserRepository : IUser
         var jsonToken = tokenHandler.CreateToken(tokenDescriptor);
         var token = tokenHandler.WriteToken(jsonToken);
 
-        return new UserTokenDto(token, tokenDescriptor.Expires.Value);
+        return new UserTokenDto(userDto.Id, userDto.Name, userDto.Email, userDto.Role, token, tokenDescriptor.Expires.Value);
     }
 }
