@@ -4,7 +4,6 @@ using GeekShopping.IdentityUserAPI.Repository.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.IdentityModel.Tokens;
 using System.Reflection;
 using System.Text;
@@ -27,19 +26,6 @@ builder.Services.AddAuthentication(options =>
 
 }).AddJwtBearer(options =>
 {
-    //options.TokenValidationParameters = new TokenValidationParameters
-    //{
-    //    ValidateIssuer = true,            
-    //    ValidateAudience = true,            
-    //    ValidateLifetime = true,    
-    //    ValidateIssuerSigningKey = true,
-
-    //    ValidIssuer = builder.Configuration["Jwt:Issuer"],
-    //    ValidAudience = builder.Configuration["Jwt:Audience"],
-    //    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:SecretKey"]!)),
-    //    ClockSkew = TimeSpan.Zero
-    //};
-
     options.RequireHttpsMetadata = false;
     options.SaveToken = true;
     options.TokenValidationParameters = new TokenValidationParameters

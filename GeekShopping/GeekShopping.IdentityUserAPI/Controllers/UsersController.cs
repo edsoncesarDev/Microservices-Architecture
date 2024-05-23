@@ -1,8 +1,8 @@
 ﻿using GeekShopping.IdentityUserAPI.Dto;
 using GeekShopping.IdentityUserAPI.Repository.Interfaces;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Shared.Roles;
 
 namespace GeekShopping.IdentityUserAPI.Controllers
 {
@@ -17,7 +17,7 @@ namespace GeekShopping.IdentityUserAPI.Controllers
             _user = user;
         }
 
-        [Authorize(Roles = "admin")]
+        [Authorize(Roles = AuthorizeRole.Admin)]
         [HttpGet]
         public IActionResult LoggedUser()
         {

@@ -4,7 +4,6 @@ using GeekShopping.IdentityUserAPI.Dto;
 using GeekShopping.IdentityUserAPI.Infrastructure.Context;
 using GeekShopping.IdentityUserAPI.Repository.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.IdentityModel.Tokens;
 using Shared.Exceptions;
 using System.IdentityModel.Tokens.Jwt;
