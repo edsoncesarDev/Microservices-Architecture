@@ -1,32 +1,26 @@
-using GeekShopping.Web.Models;
+using GeekShopping.Web.Filters;
+using GeekShopping.Web.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using System.Diagnostics;
 
-namespace GeekShopping.Web.Controllers
+namespace GeekShopping.Web.Controllers;
+
+[LoggedUsers]
+public class HomeController : Controller
 {
-    public class HomeController : Controller
+    private readonly ISessionUser _sessionUser;
+
+    public HomeController(ISessionUser sessionUser)
     {
-        private readonly ILogger<HomeController> _logger;
+        _sessionUser = sessionUser;
+    }
 
-        public HomeController(ILogger<HomeController> logger)
+    public IActionResult Index()
+    {
+        if(_sessionUser.GetUserSession() is null)
         {
-            _logger = logger;
+           return RedirectToAction("Index", "Login");
         }
 
-        public IActionResult Index()
-        {
-            return View();
-        }
-
-        public IActionResult Privacy()
-        {
-            return View();
-        }
-
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        }
+        return View();
     }
 }

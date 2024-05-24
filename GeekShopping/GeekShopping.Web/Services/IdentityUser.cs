@@ -16,12 +16,12 @@ public class IdentityUser : IIdentityUser
         _httpClient = httpClient;
         _sessionUser = sessionUser;
         _configuration = configuration;
-        BasePath = $"{_configuration["ServicesURL:IdentityUserAPI"]!}/api/v1/Users/Login";
+        BasePath = _configuration["ServicesURL:IdentityUserAPI"]!;
     }
 
     public async Task<UserModel> LoginUser(UserLoginModel userModel)
     {
-        var response = await _httpClient.PostAsJson(BasePath, userModel);
+        var response = await _httpClient.PostAsJson($"{BasePath}/login", userModel);
 
         ValidateHttpStatus(response);
 
@@ -32,6 +32,15 @@ public class IdentityUser : IIdentityUser
         return user;
     }
 
+    public async Task<UserRegisterModel> RegisterUser(UserRegisterModel userModel)
+    {
+        var response = await _httpClient.PostAsJson($"{BasePath}/register", userModel);
+
+        ValidateHttpStatus(response);
+
+        return await response.ReadContentAs<UserRegisterModel>();
+    }
+
     private void ValidateHttpStatus(HttpResponseMessage response)
     {
         if (!response.IsSuccessStatusCode)
@@ -39,4 +48,6 @@ public class IdentityUser : IIdentityUser
             throw new Exception($"Something went wrong when calling the API : {response.ReasonPhrase}");
         }
     }
+
+    
 }

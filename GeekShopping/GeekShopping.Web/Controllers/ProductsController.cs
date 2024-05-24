@@ -1,11 +1,13 @@
-﻿using GeekShopping.Web.Models;
-using GeekShopping.Web.Resource;
+﻿using GeekShopping.Web.Filters;
+using GeekShopping.Web.Models;
 using GeekShopping.Web.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GeekShopping.Web.Controllers;
 
+[LoggedUsers]
+[AuthorizeAdmin]
 public class ProductsController : Controller
 {
     private readonly IProductService _productService;
@@ -27,8 +29,7 @@ public class ProductsController : Controller
     {
         return View();
     }
-
-    [Authorize]
+   
     [HttpPost]
     public async Task<IActionResult> Create(ProductModel model)
     {
@@ -57,7 +58,6 @@ public class ProductsController : Controller
         return NotFound();
     }
 
-    [Authorize]
     [HttpPost]
     public async Task<IActionResult> Update(ProductModel model)
     {
@@ -87,7 +87,6 @@ public class ProductsController : Controller
         return NotFound();
     }
 
-    [Authorize(Roles = AuthorizeRole.Admin)]
     [HttpPost]
     public async Task<IActionResult> Delete(ProductModel model)
     {

@@ -23,13 +23,13 @@ public class SessionUser : ISessionUser
 
     public UserModel GetUserSession()
     {
-        var user = JsonSerializer.Deserialize<UserModel>(_httpContext.HttpContext?.Session.Get(_key))!;
+        var session = _httpContext.HttpContext?.Session.Get(_key) ?? null;
 
-        if(user is not null)
+        if(session is not null)
         {
-            return user;
+            return JsonSerializer.Deserialize<UserModel>(session)!;
         }
-
+        
         return null!;
     }
 

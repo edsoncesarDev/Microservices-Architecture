@@ -24,7 +24,7 @@ namespace GeekShopping.IdentityUserAPI.Controllers
             return Ok($"{User.Identity!.Name} - {DateTime.Now.ToString("dd/MM/yyyy")}: Token successfully validated");
         }
 
-        [HttpPost, Route("Register")]
+        [HttpPost, Route("register")]
         public async Task<IActionResult> RegisterUser([FromBody] UserDto userDto)
         {
             var user = await _user.RegisterUser(userDto);
@@ -37,7 +37,7 @@ namespace GeekShopping.IdentityUserAPI.Controllers
             return Ok(user);
         }
 
-        [HttpPost, Route("Login")]
+        [HttpPost, Route("login")]
         public async Task<IActionResult> LoginUser([FromBody] UserLoginDto loginDto)
         {
             var token = await _user.Login(loginDto);

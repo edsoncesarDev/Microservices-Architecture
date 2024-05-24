@@ -14,7 +14,7 @@ public sealed class ProductService : IProductService
     {
         _httpClient = httpClient;
         _configuration = configuration;
-        BasePath = $"{_configuration["ServicesURL:ProductAPI"]!}/api/v1/products";
+        BasePath = _configuration["ServicesURL:ProductAPI"]!;
     }
 
     public async Task<List<ProductModel>> GetAllProducts()
