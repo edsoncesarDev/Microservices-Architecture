@@ -1,43 +1,22 @@
-using GeekShopping.Web.Resource;
 using GeekShopping.Web.Services;
 using GeekShopping.Web.Services.Interfaces;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-builder.Services.AddHttpClient<IProductService, ProductService>( x => 
-    x.BaseAddress = new Uri(builder.Configuration["ServicesURL:ProductAPI"]!)
-);
+builder.Services.AddTransient<IProductService, ProductService>();
+builder.Services.AddTransient<ISessionUser, SessionUser>();
+builder.Services.AddTransient<IIdentityUser, IdentityUser>();
 
-builder.Services.AddSingleton<ILoggedUser, AuthorizeUser>();
-builder.Services.AddMemoryCache();
+builder.Services.AddHttpClient();
 builder.Services.AddHttpContextAccessor();
 
-builder.Services.AddAuthentication(options =>
+builder.Services.AddSession(x =>
 {
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-
-}).AddJwtBearer(options =>
-{
-    options.RequireHttpsMetadata = false;
-    options.SaveToken = true;
-    options.TokenValidationParameters = new TokenValidationParameters
-    {
-        ValidateIssuerSigningKey = true,
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidateLifetime = true,
-
-        ValidIssuer = builder.Configuration["Jwt:Issuer"],
-        ValidAudience = builder.Configuration["Jwt:Audience"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:SecretKey"]!)),
-    };
+    x.Cookie.HttpOnly = true;
+    x.Cookie.IsEssential = true;
 });
 
 var app = builder.Build();
@@ -55,10 +34,6 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
-
-app.UseMiddleware<AuthorizeUser>();
-
-app.UseAuthentication();
 
 app.UseAuthorization();
 

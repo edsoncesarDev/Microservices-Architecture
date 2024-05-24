@@ -7,11 +7,14 @@ namespace GeekShopping.Web.Services;
 public sealed class ProductService : IProductService
 {
     private HttpClient _httpClient;
-    private string BasePath = "api/v1/products";
+    private string BasePath;
+    private readonly IConfiguration _configuration;
 
-    public ProductService(HttpClient httpClient)
+    public ProductService(HttpClient httpClient, IConfiguration configuration)
     {
         _httpClient = httpClient;
+        _configuration = configuration;
+        BasePath = $"{_configuration["ServicesURL:ProductAPI"]!}/api/v1/products";
     }
 
     public async Task<List<ProductModel>> GetAllProducts()

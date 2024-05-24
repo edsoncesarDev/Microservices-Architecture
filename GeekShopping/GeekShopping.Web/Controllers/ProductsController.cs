@@ -15,7 +15,6 @@ public class ProductsController : Controller
         _productService = productService;
     }
 
-    [Authorize]
     [HttpGet]
     public async Task<IActionResult> Index()
     {
