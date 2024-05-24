@@ -17,7 +17,7 @@ public class ProductsController : ControllerBase
         _product = product;
     }
 
-    //[Authorize]
+    [Authorize]
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
