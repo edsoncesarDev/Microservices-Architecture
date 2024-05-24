@@ -74,7 +74,6 @@ public class ProductsController : Controller
         return View(model);
     }
 
-    [Authorize]
     public async Task<IActionResult> ViewDelete(int id)
     {
         var product = await _productService.GetProductById(id);
