@@ -1,4 +1,5 @@
 ﻿
+using GeekShopping.Web.Models;
 using GeekShopping.Web.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -19,7 +20,7 @@ public class Menu : ViewComponent
 
         if(user is null)
         {
-            return null!;
+            return View(new UserModel());
         }
 
         return View(user);

@@ -79,7 +79,11 @@ public sealed class ProductService : IProductService
 
     private void SetAuthorization()
     {
-        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", _session.GetUserSession().Token);
+        if(_session.GetUserSession() != null)
+        {
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", _session.GetUserSession().Token);
+
+        }
     }
    
     private void ValidateHttpStatus(HttpResponseMessage response)

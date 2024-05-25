@@ -4,23 +4,31 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace GeekShopping.Web.Controllers;
 
-[LoggedUsers]
+//[LoggedUsers]
 public class HomeController : Controller
 {
     private readonly ISessionUser _sessionUser;
+    private readonly IProductService _productService;
 
-    public HomeController(ISessionUser sessionUser)
+    public HomeController(ISessionUser sessionUser, IProductService productService)
     {
         _sessionUser = sessionUser;
+        _productService = productService;
     }
 
-    public IActionResult Index()
+    public async Task<IActionResult> Index()
     {
-        if(_sessionUser.GetUserSession() is null)
+        return View( await _productService.GetAllProducts());
+    }
+
+    [HttpGet("{id:int}")]
+    public async Task<IActionResult> Details(int id)
+    {
+        if (_sessionUser.GetUserSession() is null)
         {
-           return RedirectToAction("Index", "Login");
+            return RedirectToAction("Index", "Login");
         }
 
-        return View();
+        return View(await _productService.GetProductById(id));
     }
 }

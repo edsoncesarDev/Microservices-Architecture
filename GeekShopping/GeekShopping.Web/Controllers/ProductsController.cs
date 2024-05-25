@@ -5,8 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace GeekShopping.Web.Controllers;
 
-[LoggedUsers]
-[AuthorizeAdmin]
+
 public class ProductsController : Controller
 {
     private readonly IProductService _productService;
@@ -28,7 +27,9 @@ public class ProductsController : Controller
     {
         return View();
     }
-   
+
+    [LoggedUsers]
+    [AuthorizeAdmin]
     [HttpPost]
     public async Task<IActionResult> Create(ProductModel model)
     {
@@ -45,6 +46,7 @@ public class ProductsController : Controller
         return View(model);
     }
 
+
     public async Task<IActionResult> ViewUpdate(int id)
     {
        var product = await _productService.GetProductById(id);
@@ -57,6 +59,8 @@ public class ProductsController : Controller
         return NotFound();
     }
 
+    [LoggedUsers]
+    [AuthorizeAdmin]
     [HttpPost]
     public async Task<IActionResult> Update(ProductModel model)
     {
@@ -85,6 +89,8 @@ public class ProductsController : Controller
         return NotFound();
     }
 
+    [LoggedUsers]
+    [AuthorizeAdmin]
     [HttpPost]
     public async Task<IActionResult> Delete(ProductModel model)
     {
