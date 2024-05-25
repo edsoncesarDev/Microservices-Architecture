@@ -1,6 +1,7 @@
 ﻿using GeekShopping.Web.Models;
 using GeekShopping.Web.Resource;
 using GeekShopping.Web.Services.Interfaces;
+using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text.Json;
 
@@ -23,7 +24,9 @@ public sealed class ProductService : IProductService
 
     public async Task<List<ProductModel>> GetAllProducts()
     {
-        var response = await _httpClient.SendAsync(SetAuthorization(HttpMethod.Get, BasePath));
+        SetAuthorization();
+
+        var response = await _httpClient.GetAsync(BasePath);
 
         ValidateHttpStatus(response);
 
@@ -32,7 +35,9 @@ public sealed class ProductService : IProductService
 
     public async Task<ProductModel> GetProductById(int id)
     {
-        var response = await _httpClient.SendAsync(SetAuthorization(HttpMethod.Get, $"{BasePath}/{id}"));
+        SetAuthorization();
+
+        var response = await _httpClient.GetAsync($"{BasePath}/{id}");
 
         ValidateHttpStatus(response);
 
@@ -41,7 +46,9 @@ public sealed class ProductService : IProductService
 
     public async Task<ProductModel> AddProduct(ProductModel product)
     {
-        var response = await _httpClient.SendAsync(SetAuthorization(HttpMethod.Post, BasePath, product));
+        SetAuthorization();
+
+        var response = await _httpClient.PostAsJson(BasePath, product);
 
         ValidateHttpStatus(response);
 
@@ -50,7 +57,9 @@ public sealed class ProductService : IProductService
 
     public async Task<ProductModel> UpdateProduct(ProductModel product)
     {
-        var response = await _httpClient.SendAsync(SetAuthorization(HttpMethod.Put, BasePath, product));
+        SetAuthorization();
+
+        var response = await _httpClient.PutAsJson(BasePath, product);
 
         ValidateHttpStatus(response);
 
@@ -59,28 +68,18 @@ public sealed class ProductService : IProductService
 
     public async Task<bool> DeleteProductById(int id)
     {
-        var response = await _httpClient.SendAsync(SetAuthorization(HttpMethod.Delete, $"{BasePath}/{id}"));
+        SetAuthorization();
+
+        var response = await _httpClient.DeleteAsync($"{BasePath}/{id}");
 
         ValidateHttpStatus(response);
 
         return response.IsSuccessStatusCode;
     }
 
-    private HttpRequestMessage SetAuthorization(HttpMethod method, string basePath, dynamic data = null!)
+    private void SetAuthorization()
     {
-        var request = new HttpRequestMessage(method, basePath);
-
-        if(method == HttpMethod.Post || method == HttpMethod.Put)
-        {
-            var dataAsString = JsonSerializer.Serialize(data);
-            var content = new StringContent(dataAsString);
-
-            content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-            request.Content = content;
-        }
-
-        request.Headers.Add("Authorization", $"bearer {_session.GetUserSession().Token}");
-        return request;
+        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", _session.GetUserSession().Token);
     }
    
     private void ValidateHttpStatus(HttpResponseMessage response)

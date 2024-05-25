@@ -1,7 +1,6 @@
 ﻿using GeekShopping.Web.Filters;
 using GeekShopping.Web.Models;
 using GeekShopping.Web.Services.Interfaces;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GeekShopping.Web.Controllers;
