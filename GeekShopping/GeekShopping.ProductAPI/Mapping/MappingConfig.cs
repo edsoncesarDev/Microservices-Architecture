@@ -4,7 +4,7 @@ using GeekShopping.ProductAPI.Dto;
 
 namespace GeekShopping.ProductAPI.Mapping;
 
-public class MappingConfig : Profile
+public sealed class MappingConfig : Profile
 {
     public MappingConfig()
     {
