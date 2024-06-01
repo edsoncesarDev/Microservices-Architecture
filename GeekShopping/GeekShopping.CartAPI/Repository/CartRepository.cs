@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
+using GeekShopping.CartAPI.Domain.Entities;
 using GeekShopping.CartAPI.Dto;
 using GeekShopping.CartAPI.Infrastructure.Context;
 using GeekShopping.CartAPI.Repository.Interface;
+using Microsoft.EntityFrameworkCore;
 
 namespace GeekShopping.CartAPI.Repository;
 
@@ -16,33 +18,114 @@ public sealed class CartRepository : ICartRepository
         _mapper = mapper;
     }
 
-    public Task<bool> ApplyCoupon(int userId, string couponCode)
+    public async Task<bool> ApplyCoupon(int userId, string couponCode)
     {
         throw new NotImplementedException();
     }
 
-    public Task<bool> ClearCart(int userId)
+    public async Task<bool> RemoveCoupon(int userId)
     {
         throw new NotImplementedException();
     }
 
-    public Task<CartDto> FindCartByUserId(int userId)
+    public async Task<bool> ClearCart(int userId)
     {
-        throw new NotImplementedException();
+        CartHeader? cartHeader = await _context.CartHeaders.FirstOrDefaultAsync(x => x.UserId == userId);
+
+        if(cartHeader is not null)
+        {
+            _context.CartDetails.RemoveRange(_context.CartDetails.Where(x => x.CartHeaderId == cartHeader.Id));
+
+            _context.CartHeaders.Remove(cartHeader);
+
+            return await _context.SaveChangesAsync() > 0;
+        }
+
+        return false;
     }
 
-    public Task<bool> RemoveCoupon(int userId)
+    public async Task<CartDto> FindCartByUserId(int userId)
     {
-        throw new NotImplementedException();
+        Cart cart = new();
+
+        cart.CartHeader = await _context.CartHeaders.AsNoTracking().FirstOrDefaultAsync(u => u.UserId == userId);
+
+        cart.CartDetails =  _context.CartDetails.AsNoTracking()
+                                                .Include(x => x.Product)
+                                                .Where(x => x.CartHeaderId == cart.CartHeader!.Id);
+
+        return _mapper.Map<CartDto>(cart);
     }
 
-    public Task<bool> RemoveFromCart(int cartDetailId)
+    public async Task<bool> RemoveFromCart(int cartDetailId)
     {
-        throw new NotImplementedException();
+        CartDetail? cart = await _context.CartDetails.AsNoTracking().FirstOrDefaultAsync(x => x.Id == cartDetailId);
+
+        int total = _context.CartDetails.Where(x => x.CartHeaderId == cart!.CartHeaderId).Count();
+
+        _context.CartDetails.Remove(cart!);
+
+        if (total == 1)
+        {
+            CartHeader? cartHeaderToRemove = await _context.CartHeaders.FirstOrDefaultAsync(x => x.Id == cart!.CartHeaderId); 
+
+            _context.CartHeaders.Remove(cartHeaderToRemove!);
+
+            return await _context.SaveChangesAsync() > 0;
+        }
+
+        return false;
     }
 
-    public Task<CartDto> SaveOrUpdateCart(CartDto cart)
+    public async Task<CartDto> SaveOrUpdateCart(CartDto model)
     {
-        throw new NotImplementedException();
+        var cart = _mapper.Map<Cart>(model);
+
+        var product = await _context.Products.AsNoTracking().FirstOrDefaultAsync(x => x.Id == cart.CartDetails!.FirstOrDefault()!.ProductId);
+
+        if(product is null)
+        {
+            await _context.Products.AddAsync(cart.CartDetails!.FirstOrDefault()!.Product!);
+            await _context.SaveChangesAsync();
+        }
+
+        var cartHeader = await _context.CartHeaders.AsNoTracking().FirstOrDefaultAsync(x => x.UserId == cart.CartHeader!.UserId);
+
+        if(cartHeader is null)
+        {
+            await _context.CartHeaders.AddAsync(cart.CartHeader!);
+            await _context.SaveChangesAsync();
+
+            cart.CartDetails!.FirstOrDefault()!.CartHeaderId = cart.CartHeader!.Id;
+            cart.CartDetails!.FirstOrDefault()!.Product = null!;
+
+            await _context.CartDetails.AddAsync(cart.CartDetails!.FirstOrDefault()!);
+            await _context.SaveChangesAsync();
+        }
+        else
+        {
+            var cartDetail = await _context.CartDetails.AsNoTracking()
+                                                       .FirstOrDefaultAsync(p => p.ProductId == model.CartDetails!.FirstOrDefault()!.ProductId &&
+                                                       p.CartHeaderId == cartHeader.Id);
+
+            if(cartDetail is null)
+            {
+                cart.CartDetails!.FirstOrDefault()!.CartHeaderId = cart.CartHeader!.Id;
+                cart.CartDetails!.FirstOrDefault()!.Product = null!;
+                await _context.CartDetails.AddAsync(cart.CartDetails!.FirstOrDefault()!);
+                await _context.SaveChangesAsync();
+            }
+            else
+            {
+                cart.CartDetails!.FirstOrDefault()!.Product = null!;
+                cart.CartDetails!.FirstOrDefault()!.Count += cartDetail.Count;
+                cart.CartDetails!.FirstOrDefault()!.Id = cartDetail.Id;
+                cart.CartDetails!.FirstOrDefault()!.CartHeaderId = cartDetail.CartHeaderId;
+                await _context.CartDetails.AddAsync(cart.CartDetails!.FirstOrDefault()!);
+                await _context.SaveChangesAsync();
+            }
+        }
+
+        return _mapper.Map<CartDto>(cart);
     }
 }
