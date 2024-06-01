@@ -105,12 +105,12 @@ public sealed class CartRepository : ICartRepository
         else
         {
             var cartDetail = await _context.CartDetails.AsNoTracking()
-                                                       .FirstOrDefaultAsync(p => p.ProductId == model.CartDetails!.FirstOrDefault()!.ProductId &&
+                                                       .FirstOrDefaultAsync(p => p.ProductId == cart.CartDetails!.FirstOrDefault()!.ProductId &&
                                                        p.CartHeaderId == cartHeader.Id);
 
             if(cartDetail is null)
             {
-                cart.CartDetails!.FirstOrDefault()!.CartHeaderId = cart.CartHeader!.Id;
+                cart.CartDetails!.FirstOrDefault()!.CartHeaderId = cartHeader!.Id;
                 cart.CartDetails!.FirstOrDefault()!.Product = null!;
                 await _context.CartDetails.AddAsync(cart.CartDetails!.FirstOrDefault()!);
                 await _context.SaveChangesAsync();
