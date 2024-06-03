@@ -7,6 +7,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddTransient<IProductService, ProductService>();
+builder.Services.AddTransient<ICartService, CartService>();
 builder.Services.AddTransient<ISessionUser, SessionUser>();
 builder.Services.AddTransient<IIdentityUser, IdentityUser>();
 

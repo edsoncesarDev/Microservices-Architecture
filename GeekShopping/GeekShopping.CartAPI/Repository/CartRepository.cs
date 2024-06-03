@@ -50,9 +50,10 @@ public sealed class CartRepository : ICartRepository
 
         cart.CartHeader = await _context.CartHeaders.AsNoTracking().FirstOrDefaultAsync(u => u.UserId == userId);
 
-        cart.CartDetails =  _context.CartDetails.AsNoTracking()
+        cart.CartDetails = await _context.CartDetails.AsNoTracking()
                                                 .Include(x => x.Product)
-                                                .Where(x => x.CartHeaderId == cart.CartHeader!.Id);
+                                                .Where(x => x.CartHeaderId == cart.CartHeader!.Id)
+                                                .ToListAsync();
 
         return _mapper.Map<CartDto>(cart);
     }
@@ -121,7 +122,7 @@ public sealed class CartRepository : ICartRepository
                 cart.CartDetails!.FirstOrDefault()!.Count += cartDetail.Count;
                 cart.CartDetails!.FirstOrDefault()!.Id = cartDetail.Id;
                 cart.CartDetails!.FirstOrDefault()!.CartHeaderId = cartDetail.CartHeaderId;
-                await _context.CartDetails.AddAsync(cart.CartDetails!.FirstOrDefault()!);
+                _context.CartDetails.Update(cart.CartDetails!.FirstOrDefault()!);
                 await _context.SaveChangesAsync();
             }
         }

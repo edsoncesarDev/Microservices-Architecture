@@ -1,16 +1,14 @@
 ﻿using GeekShopping.Web.Models;
 using GeekShopping.Web.Resource;
 using GeekShopping.Web.Services.Interfaces;
-using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Text.Json;
 
 namespace GeekShopping.Web.Services;
 
 public sealed class ProductService : IProductService
 {
     private HttpClient _httpClient;
-    private string BasePath;
+    private string _basePath;
     private readonly IConfiguration _configuration;
     private readonly ISessionUser _session;
 
@@ -18,7 +16,7 @@ public sealed class ProductService : IProductService
     {
         _httpClient = httpClient;
         _configuration = configuration;
-        BasePath = _configuration["ServicesURL:ProductAPI"]!;
+        _basePath = _configuration["ServicesURL:ProductAPI"]!;
         _session = session;
     }
 
@@ -26,7 +24,7 @@ public sealed class ProductService : IProductService
     {
         SetAuthorization();
 
-        var response = await _httpClient.GetAsync(BasePath);
+        var response = await _httpClient.GetAsync(_basePath);
 
         ValidateHttpStatus(response);
 
@@ -37,7 +35,7 @@ public sealed class ProductService : IProductService
     {
         SetAuthorization();
 
-        var response = await _httpClient.GetAsync($"{BasePath}/{id}");
+        var response = await _httpClient.GetAsync($"{_basePath}/{id}");
 
         ValidateHttpStatus(response);
 
@@ -48,7 +46,7 @@ public sealed class ProductService : IProductService
     {
         SetAuthorization();
 
-        var response = await _httpClient.PostAsJson(BasePath, product);
+        var response = await _httpClient.PostAsJson(_basePath, product);
 
         ValidateHttpStatus(response);
 
@@ -59,7 +57,7 @@ public sealed class ProductService : IProductService
     {
         SetAuthorization();
 
-        var response = await _httpClient.PutAsJson(BasePath, product);
+        var response = await _httpClient.PutAsJson(_basePath, product);
 
         ValidateHttpStatus(response);
 
@@ -70,7 +68,7 @@ public sealed class ProductService : IProductService
     {
         SetAuthorization();
 
-        var response = await _httpClient.DeleteAsync($"{BasePath}/{id}");
+        var response = await _httpClient.DeleteAsync($"{_basePath}/{id}");
 
         ValidateHttpStatus(response);
 

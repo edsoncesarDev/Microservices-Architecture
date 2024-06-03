@@ -1,9 +1,7 @@
-﻿using GeekShopping.CartAPI.Domain.Entities;
+﻿namespace GeekShopping.CartAPI.Dto;
 
-namespace GeekShopping.CartAPI.Dto;
-
-public sealed record CartDto
+public sealed class CartDto
 {
     public CartHeaderDto? CartHeader { get; set; }
-    public IEnumerable<CartDetailDto>? CartDetails { get; set; }
+    public List<CartDetailDto>? CartDetails { get; set; }
 }

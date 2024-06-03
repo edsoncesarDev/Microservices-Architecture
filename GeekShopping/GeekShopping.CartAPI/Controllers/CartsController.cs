@@ -15,7 +15,7 @@ namespace GeekShopping.CartAPI.Controllers
             _cartRepository = cartRepository;
         }
 
-        [HttpGet("GetCartByUserId/{id:int}")]
+        [HttpGet("GetCartByUserId/{userId:int}")]
         public async Task<IActionResult> GetCartByUserId(int userId)
         {
             var cart = await _cartRepository.FindCartByUserId(userId);
@@ -28,8 +28,8 @@ namespace GeekShopping.CartAPI.Controllers
             return Ok(cart);
         }
 
-        [HttpPost("SaveOrUpdate")]
-        public async Task<IActionResult> SaveOrUpdateCart(CartDto model)
+        [HttpPost("SaveCart")]
+        public async Task<IActionResult> SaveCart(CartDto model)
         {
             var cart = await _cartRepository.SaveOrUpdateCart(model);
 
@@ -41,10 +41,23 @@ namespace GeekShopping.CartAPI.Controllers
             return Ok(cart);
         }
 
-        [HttpDelete("RemoveCart/{id:int}")]
-        public async Task<IActionResult> RemoveCart(int userId)
+        [HttpPost("UpdateCart")]
+        public async Task<IActionResult> UpdateCart(CartDto model)
         {
-            var cart = await _cartRepository.RemoveFromCart(userId);
+            var cart = await _cartRepository.SaveOrUpdateCart(model);
+
+            if (cart is null)
+            {
+                return BadRequest();
+            }
+
+            return Ok(cart);
+        }
+
+        [HttpDelete("RemoveCart/{cartId:int}")]
+        public async Task<IActionResult> RemoveCart(int cartId)
+        {
+            var cart = await _cartRepository.RemoveFromCart(cartId);
 
             if (!cart)
             {
@@ -54,7 +67,7 @@ namespace GeekShopping.CartAPI.Controllers
             return Ok();
         }
 
-        [HttpDelete("ClearCart/{id:int}")]
+        [HttpDelete("ClearCart/{userId:int}")]
         public async Task<IActionResult> ClearCart(int userId)
         {
             var cart = await _cartRepository.ClearCart(userId);

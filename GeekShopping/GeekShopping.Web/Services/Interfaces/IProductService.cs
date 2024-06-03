@@ -1,5 +1,4 @@
 ﻿using GeekShopping.Web.Models;
-using System.Threading.Tasks;
 
 namespace GeekShopping.Web.Services.Interfaces;
 
