@@ -31,7 +31,5 @@ public sealed class User : BaseUser
 
         BusinessException.When(string.IsNullOrWhiteSpace(role), "Invalid role");
         Role = role;
-
-        CreationDate = DateTime.SpecifyKind(Convert.ToDateTime(CreationDate), DateTimeKind.Utc);
     }
 }
