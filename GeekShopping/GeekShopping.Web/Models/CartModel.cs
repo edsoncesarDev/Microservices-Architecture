@@ -20,7 +20,7 @@ public sealed class CartModel
 
     public void AddCartDetails(CartDetailModel cartDetail)
     {
-        var details = CartDetails!.Any(x => x.Id == cartDetail.Id);
+        var details = CartDetails!.Exists(x => x.Id == cartDetail.Id);
 
         if (!details)
         {
