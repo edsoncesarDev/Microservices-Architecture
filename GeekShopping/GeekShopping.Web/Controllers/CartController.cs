@@ -19,9 +19,23 @@ public class CartController : Controller
         _sessionUser = sessionUser;
     }
 
+    [HttpGet]
     public async Task<IActionResult> Index()
     {
         return View(await FindUserCart());
+    }
+
+    //[HttpGet("{id:int}")]
+    public async Task<IActionResult> RemoveFromCart(int id)
+    {
+        var response = await _cartService.RemoveFromCart(id);
+
+        if (response)
+        {
+            return RedirectToAction(nameof(Index));
+        }
+
+        return View();
     }
 
     private async Task<CartModel> FindUserCart()

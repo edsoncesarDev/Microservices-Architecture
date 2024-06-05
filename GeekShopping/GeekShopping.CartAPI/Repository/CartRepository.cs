@@ -72,10 +72,9 @@ public sealed class CartRepository : ICartRepository
 
             _context.CartHeaders.Remove(cartHeaderToRemove!);
 
-            return await _context.SaveChangesAsync() > 0;
         }
-
-        return false;
+        
+        return await _context.SaveChangesAsync() > 0;
     }
 
     public async Task<CartDto> SaveOrUpdateCart(CartDto model)
