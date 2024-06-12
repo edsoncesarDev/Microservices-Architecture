@@ -64,14 +64,26 @@ public class CartService : ICartService
         return response.IsSuccessStatusCode;
     }
 
-    public async Task<bool> ApplyCoupon(CartModel cart, string couponCode)
+    public async Task<bool> ApplyCoupon(CartModel cart)
     {
-        throw new NotImplementedException();
+        SetAuthorization();
+
+        var response = await _httpClient.PostAsJson($"{_basePath}/ApplyCoupon", cart);
+
+        ValidateHttpStatus(response);
+
+        return response.IsSuccessStatusCode;
     }
 
     public async Task<bool> RemoveCoupon(int userId)
     {
-        throw new NotImplementedException();
+        SetAuthorization();
+
+        var response = await _httpClient.DeleteAsync($"{_basePath}/RemoveCoupon/{userId}");
+
+        ValidateHttpStatus(response);
+
+        return response.IsSuccessStatusCode;
     }
 
     public async Task<bool> ClearCart(int userId)

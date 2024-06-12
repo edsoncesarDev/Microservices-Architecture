@@ -18,7 +18,16 @@ public sealed class GenericRepository<T> : IGenericRepository<T> where T : Base
 
     public async Task<List<T>> GetAll()
     {
-        return await _dbSet.AsNoTracking().ToListAsync();
+        try
+        {
+            return await _dbSet.AsNoTracking().ToListAsync();
+        }
+        catch (Exception ex)
+        {
+
+            throw new Exception(ex.Message);
+        }
+        
     }
 
     public async Task<T> FindById(int id)

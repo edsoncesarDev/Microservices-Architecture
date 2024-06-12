@@ -11,18 +11,48 @@ public class CartController : Controller
     private readonly IProductService _productService;
     private readonly ICartService _cartService;
     private readonly ISessionUser _sessionUser;
+    private readonly ICouponService _couponService;
 
-    public CartController(IProductService productService, ICartService cartService, ISessionUser sessionUser)
+    public CartController(IProductService productService, ICartService cartService, ISessionUser sessionUser, ICouponService couponService)
     {
         _productService = productService;
         _cartService = cartService;
         _sessionUser = sessionUser;
+        _couponService = couponService;
     }
 
     [HttpGet]
     public async Task<IActionResult> Index()
     {
         return View(await FindUserCart());
+    }
+
+    [HttpPost]
+    [ActionName("ApplyCoupon")]
+    public async Task<IActionResult> ApplyCoupon(CartModel cart)
+    {
+        var response = await _cartService.ApplyCoupon(cart);
+
+        if (response)
+        {
+            return RedirectToAction(nameof(Index));
+        }
+
+        return View();
+    }
+
+    [HttpPost]
+    [ActionName("RemoveCoupon")]
+    public async Task<IActionResult> RemoveCoupon()
+    {
+        var response = await _cartService.RemoveCoupon(_sessionUser.GetUserSession().Id);
+
+        if (response)
+        {
+            return RedirectToAction(nameof(Index));
+        }
+
+        return View();
     }
 
     //[HttpGet("{id:int}")]
@@ -44,10 +74,22 @@ public class CartController : Controller
 
         if (response?.CartHeader is not null)
         {
+            if (!string.IsNullOrEmpty(response.CartHeader.CouponCode))
+            {
+                var coupon = await _couponService.GetCouponAsync(response.CartHeader.CouponCode.ToUpper());
+
+                if (!string.IsNullOrEmpty(coupon.CouponCode))
+                {
+                    response.CartHeader.DiscountAmount = coupon.DiscountAmount;
+                }
+            }
+
             foreach (var detail in response.CartDetails!)
             {
                 response.CartHeader.PurchaseAmount += (detail.Product!.Price * detail.Count);
             }
+
+            response.CartHeader.PurchaseAmount -= response.CartHeader.DiscountAmount;
         }
 
         return response!;

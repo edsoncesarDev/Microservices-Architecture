@@ -20,12 +20,34 @@ public sealed class CartRepository : ICartRepository
 
     public async Task<bool> ApplyCoupon(int userId, string couponCode)
     {
-        throw new NotImplementedException();
+        var cartHeader = await _context.CartHeaders
+                                       .AsNoTracking()
+                                       .FirstOrDefaultAsync(x => x.UserId == userId);
+
+        if (cartHeader != null) 
+        {
+            cartHeader.CouponCode = couponCode;
+            _context.CartHeaders.Update(cartHeader);
+            return await _context.SaveChangesAsync() > 0;
+        }
+
+        return false;
     }
 
     public async Task<bool> RemoveCoupon(int userId)
     {
-        throw new NotImplementedException();
+        var cartHeader = await _context.CartHeaders
+                                       .AsNoTracking()
+                                       .FirstOrDefaultAsync(x => x.UserId == userId);
+
+        if (cartHeader != null)
+        {
+            cartHeader.CouponCode = string.Empty;
+            _context.CartHeaders.Update(cartHeader);
+            return await _context.SaveChangesAsync() > 0;
+        }
+
+        return false;
     }
 
     public async Task<bool> ClearCart(int userId)

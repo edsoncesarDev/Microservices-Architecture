@@ -10,7 +10,7 @@ builder.Services.AddTransient<IProductService, ProductService>();
 builder.Services.AddTransient<ICartService, CartService>();
 builder.Services.AddTransient<ISessionUser, SessionUser>();
 builder.Services.AddTransient<IIdentityUser, IdentityUser>();
-//builder.Services.AddTransient<ICouponService, CouponService>();
+builder.Services.AddTransient<ICouponService, CouponService>();
 
 builder.Services.AddHttpClient();
 builder.Services.AddHttpContextAccessor();
