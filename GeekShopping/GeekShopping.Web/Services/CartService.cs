@@ -97,9 +97,15 @@ public class CartService : ICartService
         return response.IsSuccessStatusCode;
     }
 
-    public async Task<CartModel> Checkout(CartHeaderModel cartHeader)
+    public async Task<CartHeaderModel> Checkout(CartHeaderModel cartHeader)
     {
-        throw new NotImplementedException();
+        SetAuthorization();
+
+        var response = await _httpClient.PostAsJson($"{_basePath}/Checkout", cartHeader);
+
+        ValidateHttpStatus(response);
+        
+        return await response.ReadContentAs<CartHeaderModel>();
     }
 
     private void SetAuthorization()
