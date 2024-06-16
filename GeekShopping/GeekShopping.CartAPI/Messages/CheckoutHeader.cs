@@ -1,17 +1,16 @@
 ﻿using GeekShopping.CartAPI.Dto;
+using GeekShopping.MessageBus.Models;
 
 namespace GeekShopping.CartAPI.Messages;
 
-public sealed class CheckoutHeader
+public sealed class CheckoutHeader : BaseMessage
 {
-    public int Id { get; set; }
     public int UserId { get; set; }
     public string? CouponCode { get; set; }
     public decimal PurchaseAmount { get; set; }
     public decimal DiscountAmount { get; set; }
     public string? FirstName { get; set; }
     public string? LastName { get; set; }
-    public DateTime DateTime { get; set; }
     public string? Phone { get; set; }
     public string? Email { get; set; }
     public string? CardNumber { get; set; }

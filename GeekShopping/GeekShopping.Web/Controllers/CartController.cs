@@ -80,7 +80,6 @@ public class CartController : Controller
         return View();
     }
 
-    //[HttpGet("{id:int}")]
     public async Task<IActionResult> RemoveFromCart(int id)
     {
         var response = await _cartService.RemoveFromCart(id);
