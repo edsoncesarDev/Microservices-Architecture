@@ -1,6 +1,5 @@
 ﻿using GeekShopping.CartAPI.Messages;
 using GeekShopping.MessageBus.Models;
-using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 using System.Text;
 using System.Text.Json;
@@ -55,13 +54,6 @@ public sealed class RabbitMQMessageSender : IRabbitMQMessageSender
 
     private byte[] GetMessageAsByteArray(BaseMessage message)
     {
-        //var options = new JsonSerializerOptions
-        //{
-        //    WriteIndented = true
-        //};
-
-        //var json = JsonSerializer.Serialize<CheckoutHeader>((CheckoutHeader)message, options);
-
         var json = JsonSerializer.Serialize((CheckoutHeader)message);
 
         return Encoding.UTF8.GetBytes(json);

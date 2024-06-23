@@ -1,3 +1,7 @@
+using GeekShopping.OrderAPI.Infrastructure.Context;
+using GeekShopping.OrderAPI.MessagesConsumer;
+using GeekShopping.OrderAPI.Repository;
+using GeekShopping.OrderAPI.Repository.Interface;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
@@ -10,14 +14,16 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-//builder.Services.AddDbContext<AppDbContext>(options =>
-//    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
+var connection = new DbContextOptionsBuilder<AppDbContext>();
+connection.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
 
-//builder.Services.AddTransient<ICartRepository, CartRepository>();
-//builder.Services.AddSingleton<IRabbitMQMessageSender, RabbitMQMessageSender>();
+builder.Services.AddSingleton(new OrderRepository(connection.Options));
+builder.Services.AddHostedService<RabbitMQCheckoutConsumer>();
 
 builder.Services.AddAuthentication(options =>
 {
