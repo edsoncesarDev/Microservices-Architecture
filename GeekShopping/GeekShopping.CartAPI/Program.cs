@@ -20,8 +20,11 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
 builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
+builder.Services.AddHttpClient();
+builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddTransient<ICartRepository, CartRepository>();
+builder.Services.AddTransient<ICouponRespository, CouponRepository>();
 builder.Services.AddSingleton<IRabbitMQMessageSender, RabbitMQMessageSender>();
 
 builder.Services.AddAuthentication(options =>

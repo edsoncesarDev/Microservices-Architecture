@@ -11,12 +11,14 @@ namespace GeekShopping.CartAPI.Controllers
     public class CartsController : ControllerBase
     {
         private readonly ICartRepository _cartRepository;
+        private readonly ICouponRespository _couponRepository;
         private readonly IRabbitMQMessageSender _rabbitMessageSender;
         private readonly string _checkoutQueue = "CheckoutQueue";
 
-        public CartsController(ICartRepository cartRepository, IRabbitMQMessageSender rabbitMQMessageSender)
+        public CartsController(ICartRepository cartRepository, ICouponRespository couponRepository, IRabbitMQMessageSender rabbitMQMessageSender)
         {
             _cartRepository = cartRepository;
+            _couponRepository = couponRepository;
             _rabbitMessageSender = rabbitMQMessageSender;
         }
 
@@ -124,6 +126,16 @@ namespace GeekShopping.CartAPI.Controllers
             if (cart is null)
             {
                 return NotFound("User id not found.");
+            }
+
+            if (!string.IsNullOrEmpty(checkout.CouponCode))
+            {
+                var coupon = await _couponRepository.GetCouponByCodeAsync(checkout.CouponCode);
+
+                if(checkout.DiscountAmount != coupon.DiscountAmount)
+                {
+                    return StatusCode(StatusCodes.Status412PreconditionFailed);
+                }
             }
 
             checkout.CartDetails = cart.CartDetails!;

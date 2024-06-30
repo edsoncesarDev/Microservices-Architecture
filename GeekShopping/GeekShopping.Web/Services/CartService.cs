@@ -97,15 +97,22 @@ public class CartService : ICartService
         return response.IsSuccessStatusCode;
     }
 
-    public async Task<CartHeaderModel> Checkout(CartHeaderModel cartHeader)
+    public async Task<object> Checkout(CartHeaderModel cartHeader)
     {
         SetAuthorization();
 
         var response = await _httpClient.PostAsJson($"{_basePath}/Checkout", cartHeader);
 
-        ValidateHttpStatus(response);
-        
-        return await response.ReadContentAs<CartHeaderModel>();
+        if (response.IsSuccessStatusCode)
+        {
+            return await response.ReadContentAs<CartHeaderModel>();
+        }
+        else if (response.StatusCode.ToString().Equals("PreconditionFailed"))
+        {
+            return "Coupon Price has changed, please confirm!";
+        }
+
+        throw new Exception($"Something went wrong when calling the API : {response.ReasonPhrase}");
     }
 
     private void SetAuthorization()

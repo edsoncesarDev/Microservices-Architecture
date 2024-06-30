@@ -38,7 +38,12 @@ public class CartController : Controller
     {
         var cart = await _cartService.Checkout(model.CartHeader!);
 
-        if(cart is not null)
+        if (cart != null && cart.GetType() == typeof(string))
+        {
+            TempData["Error"] = cart;
+            return RedirectToAction(nameof(Checkout));
+        }
+        else if(cart is not null)
         {
             return RedirectToAction(nameof(Confirmation));
         }
