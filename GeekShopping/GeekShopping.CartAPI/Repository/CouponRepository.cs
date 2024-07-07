@@ -30,7 +30,9 @@ public sealed class CouponRepository : ICouponRespository
 
         var content = await response.Content.ReadAsStringAsync();
         
-        return JsonSerializer.Deserialize<CouponDto>(content)!;
+        var teste = JsonSerializer.Deserialize<CouponDto>(content)!;
+
+        return teste;
     }
 
     private void SetAuthorization()

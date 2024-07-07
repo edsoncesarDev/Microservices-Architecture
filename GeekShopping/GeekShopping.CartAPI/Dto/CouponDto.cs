@@ -2,7 +2,7 @@
 
 public sealed class CouponDto
 {
-    public int Id { get; set; }
-    public string CouponCode { get; set; } = null!;
-    public decimal DiscountAmount { get; set; }
+    public int id { get; set; }
+    public string couponCode { get; set; } = null!;
+    public decimal discountAmount { get; set; }
 }

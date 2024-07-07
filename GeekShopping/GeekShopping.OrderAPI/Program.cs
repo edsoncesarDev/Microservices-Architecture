@@ -1,5 +1,6 @@
 using GeekShopping.OrderAPI.Infrastructure.Context;
 using GeekShopping.OrderAPI.MessagesConsumer;
+using GeekShopping.OrderAPI.RabbitMQSender;
 using GeekShopping.OrderAPI.Repository;
 using GeekShopping.OrderAPI.Repository.Interface;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -24,6 +25,8 @@ connection.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnectio
 
 builder.Services.AddSingleton(new OrderRepository(connection.Options));
 builder.Services.AddHostedService<RabbitMQCheckoutConsumer>();
+
+builder.Services.AddSingleton<IRabbitMQMessageSender, RabbitMQMessageSender>();
 
 builder.Services.AddAuthentication(options =>
 {

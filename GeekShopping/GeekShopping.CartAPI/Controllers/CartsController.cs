@@ -132,7 +132,7 @@ namespace GeekShopping.CartAPI.Controllers
             {
                 var coupon = await _couponRepository.GetCouponByCodeAsync(checkout.CouponCode);
 
-                if(checkout.DiscountAmount != coupon.DiscountAmount)
+                if(checkout.DiscountAmount != coupon.discountAmount)
                 {
                     return StatusCode(StatusCodes.Status412PreconditionFailed);
                 }

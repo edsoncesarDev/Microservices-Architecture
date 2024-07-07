@@ -1,11 +1,11 @@
-﻿using GeekShopping.CartAPI.Messages;
-using GeekShopping.MessageBus.Models;
+﻿using GeekShopping.MessageBus.Models;
+using GeekShopping.OrderAPI.Dto;
 using RabbitMQ.Client;
 using Shared.Exceptions;
 using System.Text;
 using System.Text.Json;
 
-namespace GeekShopping.CartAPI.RabbitMQSender;
+namespace GeekShopping.OrderAPI.RabbitMQSender;
 
 public sealed class RabbitMQMessageSender : IRabbitMQMessageSender
 {
@@ -49,20 +49,20 @@ public sealed class RabbitMQMessageSender : IRabbitMQMessageSender
 
     private byte[] GetMessageAsByteArray(BaseMessage message)
     {
-        var json = JsonSerializer.Serialize((CheckoutHeader)message);
+        var json = JsonSerializer.Serialize((PaymentDto)message);
 
         return Encoding.UTF8.GetBytes(json);
     }
 
     private bool ConnectionExists()
     {
-        if(_connection != null)
+        if (_connection != null)
         {
             return true;
         }
 
         return CreateConnection();
-        
+
     }
 
     private bool CreateConnection()
@@ -76,7 +76,7 @@ public sealed class RabbitMQMessageSender : IRabbitMQMessageSender
 
         _connection = factory.CreateConnection();
 
-        if(_connection is null)
+        if (_connection is null)
         {
             BusinessException.When(true, "Error trying to connect to rabbitmq");
         }

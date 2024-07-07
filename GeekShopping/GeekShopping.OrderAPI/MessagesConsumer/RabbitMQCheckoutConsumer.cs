@@ -1,6 +1,8 @@
 ﻿
 using GeekShopping.OrderAPI.Domain.Entities;
+using GeekShopping.OrderAPI.Dto;
 using GeekShopping.OrderAPI.Messages;
+using GeekShopping.OrderAPI.RabbitMQSender;
 using GeekShopping.OrderAPI.Repository;
 using GeekShopping.OrderAPI.Repository.Interface;
 using RabbitMQ.Client;
@@ -14,14 +16,16 @@ public sealed class RabbitMQCheckoutConsumer : BackgroundService
 {
     private readonly OrderRepository _repository;
     private readonly IConfiguration _configuration;
+    private readonly IRabbitMQMessageSender _rabbitMQMessageSender;
     private IConnection _connection;
     private IModel _channel;
     private readonly ConnectionFactory _factory;
 
-    public RabbitMQCheckoutConsumer(OrderRepository repository, IConfiguration configuration)
+    public RabbitMQCheckoutConsumer(OrderRepository repository, IConfiguration configuration, IRabbitMQMessageSender rabbitMQMessageSender)
     {
         _repository = repository;
         _configuration = configuration;
+        _rabbitMQMessageSender = rabbitMQMessageSender;
         _factory = new ConnectionFactory()
         {
             HostName = _configuration["RabbitMQ:HostName"]!,
@@ -95,5 +99,17 @@ public sealed class RabbitMQCheckoutConsumer : BackgroundService
         }
 
         await _repository.AddOrder(order);
+
+        var payment = new PaymentDto(
+            order.Id,
+            $"{order.FirstName} {order.LastName}",
+            order.CardNumber!,
+            order.CVV!,
+            order.ExpiryMonthYear!,
+            order.PurchaseAmount,
+            order.Email!
+        );
+
+        _rabbitMQMessageSender.SendMessage(payment, _configuration["RabbitMQ:PaymentQueue"]!);
     }
 }
