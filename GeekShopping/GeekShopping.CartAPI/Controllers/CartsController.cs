@@ -143,6 +143,8 @@ namespace GeekShopping.CartAPI.Controllers
 
             _rabbitMessageSender.SendMessage(checkout, _checkoutQueue);
 
+            await _cartRepository.ClearCart(checkout.UserId);
+
             return Ok(checkout);
         }
     }

@@ -70,7 +70,7 @@ public sealed class CartRepository : ICartRepository
     {
         Cart cart = new();
 
-        cart.CartHeader = await _context.CartHeaders.AsNoTracking().FirstOrDefaultAsync(u => u.UserId == userId);
+        cart.CartHeader = await _context.CartHeaders.AsNoTracking().FirstOrDefaultAsync(u => u.UserId == userId) ?? new CartHeader();
 
         cart.CartDetails = await _context.CartDetails.AsNoTracking()
                                                 .Include(x => x.Product)
