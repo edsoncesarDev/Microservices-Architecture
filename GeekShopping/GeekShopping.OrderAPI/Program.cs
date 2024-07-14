@@ -23,6 +23,7 @@ connection.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnectio
 
 builder.Services.AddSingleton(new OrderRepository(connection.Options));
 builder.Services.AddHostedService<RabbitMQCheckoutConsumer>();
+builder.Services.AddHostedService<RabbitMQPaymentConsumer>();
 
 builder.Services.AddSingleton<IRabbitMQMessageSender, RabbitMQMessageSender>();
 

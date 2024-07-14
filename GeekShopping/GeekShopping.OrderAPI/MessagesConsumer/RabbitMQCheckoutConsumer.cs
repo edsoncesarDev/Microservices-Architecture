@@ -4,7 +4,6 @@ using GeekShopping.OrderAPI.Dto;
 using GeekShopping.OrderAPI.Messages;
 using GeekShopping.OrderAPI.RabbitMQSender;
 using GeekShopping.OrderAPI.Repository;
-using GeekShopping.OrderAPI.Repository.Interface;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System.Text;
