@@ -35,7 +35,7 @@ public class RabbitMQPaymentConsumer : BackgroundService
         _channel.QueueDeclare();
 
         _channel.QueueDeclare(
-           queue: _configuration["RabbitMQ:PaymentQueue"]!,               //nome da fila
+           queue: _configuration["RabbitMQ:PaymentQueue"]!,                //nome da fila
            durable: false,                                                 //se igual a true, a fila permanece ativa após o servidor ser reiniciado
            exclusive: false,                                               //se igual a true, ela só pode ser acessada via conexão atual e são excluídas ao fechar a conexão
            autoDelete: false,                                              //se igual a true, será deletada automaticamente após os consumidores usar a fila
@@ -71,6 +71,6 @@ public class RabbitMQPaymentConsumer : BackgroundService
             Email = payment.Email,
         };
 
-        _rabbitMQSender.SendMessage(paymentResult, _configuration["RabbitMQ:PaymentResultQueue"]!);
+        _rabbitMQSender.SendMessage(paymentResult);
     }
 }
