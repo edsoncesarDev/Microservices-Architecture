@@ -1,4 +1,6 @@
-﻿using RabbitMQ.Client;
+﻿using GeekShopping.Email.Dto;
+using GeekShopping.Email.Repository;
+using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System.Text;
 using System.Text.Json;
@@ -7,14 +9,14 @@ namespace GeekShopping.Email.MessagesConsumer;
 
 public sealed class RabbitMQEmailConsumer : BackgroundService
 {
-    private readonly OrderRepository _repository;
+    private readonly EmailRepository _repository;
     private readonly IConfiguration _configuration;
     private IConnection _connection;
     private IModel _channel;
     private readonly ConnectionFactory _factory;
     private readonly string _queueName;
 
-    public RabbitMQEmailConsumer(OrderRepository repository, IConfiguration configuration)
+    public RabbitMQEmailConsumer(EmailRepository repository, IConfiguration configuration)
     {
         _repository = repository;
         _configuration = configuration;
@@ -57,8 +59,8 @@ public sealed class RabbitMQEmailConsumer : BackgroundService
         consumer.Received += (cnl, evt) =>
         {
             var content = Encoding.UTF8.GetString(evt.Body.ToArray());
-            UpdatePaymentResultDto model = JsonSerializer.Deserialize<UpdatePaymentResultDto>(content)!;
-            UpdatePaymentStatus(model).GetAwaiter().GetResult();
+            UpdatePaymentResultDto message = JsonSerializer.Deserialize<UpdatePaymentResultDto>(content)!;
+            ProcessLogs(message).GetAwaiter().GetResult();
             _channel.BasicAck(evt.DeliveryTag, false);
         };
 
@@ -66,8 +68,8 @@ public sealed class RabbitMQEmailConsumer : BackgroundService
         return Task.CompletedTask;
     }
 
-    private async Task UpdatePaymentStatus(UpdatePaymentResultDto model)
+    private async Task ProcessLogs(UpdatePaymentResultDto message)
     {
-        await _repository.UpdateOrderPaymentStatus(model.OrderId, model.Status);
+        await _repository.LogEmail(message);
     }
 }

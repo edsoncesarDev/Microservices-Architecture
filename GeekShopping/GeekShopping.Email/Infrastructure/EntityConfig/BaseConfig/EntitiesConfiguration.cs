@@ -6,7 +6,7 @@ namespace GeekShopping.Email.Infrastructure.EntityConfig.BaseConfig;
 
 public abstract class EntitiesConfiguration<T> : IEntityTypeConfiguration<T> where T : Base
 {
-    public void Configure(EntityTypeBuilder<T> builder)
+    public virtual void Configure(EntityTypeBuilder<T> builder)
     {
         builder.HasKey(e => e.Id);
 
