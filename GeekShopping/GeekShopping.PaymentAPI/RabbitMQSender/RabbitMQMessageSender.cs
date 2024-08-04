@@ -15,6 +15,8 @@ public sealed class RabbitMQMessageSender : IRabbitMQMessageSender
     private readonly string? _userName;
     private readonly string? _password;
     private readonly string? _exchangeName;
+    private readonly string? _paymentOrder;
+    private readonly string? _paymentEmail;
 
     public RabbitMQMessageSender(IConfiguration configuration)
     {
@@ -23,6 +25,8 @@ public sealed class RabbitMQMessageSender : IRabbitMQMessageSender
         _userName = _configuration["RabbitMQ:UserName"]!;
         _password = _configuration["RabbitMQ:Password"]!;
         _exchangeName = _configuration["RabbitMQ:ExchangePayment"]!;
+        _paymentEmail = _configuration["RabbitMQ:PaymentEmailUpdateQueue"]!;
+        _paymentOrder = _configuration["RabbitMQ:PaymentOrderUpdateQueue"]!;
 
     }
 
@@ -32,27 +36,45 @@ public sealed class RabbitMQMessageSender : IRabbitMQMessageSender
         {
             using var channel = _connection!.CreateModel();
 
-            //channel.QueueDeclare(
-            //    queue: queueName,               //nome da fila
-            //    durable: false,                 //se igual a true, a fila permanece ativa após o servidor ser reiniciado
-            //    exclusive: false,               //se igual a true, ela só pode ser acessada via conexão atual e são excluídas ao fechar a conexão
-            //    autoDelete: false,              //se igual a true, será deletada automaticamente após os consumidores usar a fila
-            //    arguments: null                 //declara argumentos sobre o tipo da fila
-            //);
-
             channel.ExchangeDeclare(
                 _exchangeName,                    //nome exchange
-                ExchangeType.Fanout,              //tipo exchange
+                ExchangeType.Direct,              //tipo exchange
                 false,                            //se igual a true, a fila permanece ativa após o servidor ser reiniciado
                 false,                            //se igual a true, será deletada automaticamente após os consumidores usar a fila
                 null                              //declara argumentos sobre o tipo da fila
-            );                            
+            );
+
+            channel.QueueDeclare(
+                queue: _paymentEmail,               //nome da fila
+                durable: false,                     //se igual a true, a fila permanece ativa após o servidor ser reiniciado
+                exclusive: false,                   //se igual a true, ela só pode ser acessada via conexão atual e são excluídas ao fechar a conexão
+                autoDelete: false,                  //se igual a true, será deletada automaticamente após os consumidores usar a fila
+                arguments: null                     //declara argumentos sobre o tipo da fila
+            );
+
+            channel.QueueDeclare(
+                queue: _paymentOrder,               //nome da fila
+                durable: false,                     //se igual a true, a fila permanece ativa após o servidor ser reiniciado
+                exclusive: false,                   //se igual a true, ela só pode ser acessada via conexão atual e são excluídas ao fechar a conexão
+                autoDelete: false,                  //se igual a true, será deletada automaticamente após os consumidores usar a fila
+                arguments: null                     //declara argumentos sobre o tipo da fila
+            );
+
+            channel.QueueBind(_paymentEmail, _exchangeName, "paymentEmail");
+            channel.QueueBind(_paymentOrder, _exchangeName, "paymentOrder");
 
             byte[] bodyMessage = GetMessageAsByteArray(message);
 
             channel.BasicPublish(
                 exchange: _exchangeName,
-                routingKey: "",
+                routingKey: "paymentEmail",
+                basicProperties: null,
+                body: bodyMessage
+            );
+
+            channel.BasicPublish(
+                exchange: _exchangeName,
+                routingKey: "paymentOrder",
                 basicProperties: null,
                 body: bodyMessage
             );
