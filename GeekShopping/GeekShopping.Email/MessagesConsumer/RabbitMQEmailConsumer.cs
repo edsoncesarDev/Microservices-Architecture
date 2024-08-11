@@ -30,25 +30,27 @@ public sealed class RabbitMQEmailConsumer : BackgroundService
 
         _connection = _factory.CreateConnection();
         _channel = _connection.CreateModel();
-        _queueName = _channel.QueueDeclare().QueueName;                       //obtendo nome da fila dinamicamente
+        _queueName = _configuration["RabbitMQ:PaymentEmailUpdateQueue"]!;
 
-        // _channel.QueueDeclare(
-        //    queue: _configuration["RabbitMQ:PaymentResultQueue"]!,          //nome da fila
-        //    durable: false,                                                 //se igual a true, a fila permanece ativa após o servidor ser reiniciado
-        //    exclusive: false,                                               //se igual a true, ela só pode ser acessada via conexão atual e são excluídas ao fechar a conexão
-        //    autoDelete: false,                                              //se igual a true, será deletada automaticamente após os consumidores usar a fila
-        //    arguments: null                                                 //declara argumentos sobre o tipo da fila
-        //);
-
+        //_queueName = _channel.QueueDeclare().QueueName;                     //obtendo nome da fila dinamicamente
+        
         _channel.ExchangeDeclare(
           _configuration["RabbitMQ:ExchangePayment"]!,                        //nome exchange
-          ExchangeType.Fanout,                                                //tipo exchange
+          ExchangeType.Direct,                                                //tipo exchange
           false,                                                              //se igual a true, a fila permanece ativa após o servidor ser reiniciado
           false,                                                              //se igual a true, será deletada automaticamente após os consumidores usar a fila
           null                                                                //declara argumentos sobre o tipo da fila
         );
 
-        _channel.QueueBind(_queueName, _configuration["RabbitMQ:ExchangePayment"]!, "", null);
+        _channel.QueueDeclare(
+            queue: _queueName,                                                //nome da fila
+            durable: false,                                                   //se igual a true, a fila permanece ativa após o servidor ser reiniciado
+            exclusive: false,                                                 //se igual a true, ela só pode ser acessada via conexão atual e são excluídas ao fechar a conexão
+            autoDelete: false,                                                //se igual a true, será deletada automaticamente após os consumidores usar a fila
+            arguments: null                                                   //declara argumentos sobre o tipo da fila
+        );
+
+        _channel.QueueBind(_queueName, _configuration["RabbitMQ:ExchangePayment"]!, "paymentEmail", null);
     }
 
     protected override Task ExecuteAsync(CancellationToken stoppingToken)
